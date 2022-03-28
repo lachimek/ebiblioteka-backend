@@ -4,10 +4,13 @@ export const enum ROUTE {
     REGISTER_USER = "/v1/auth/register",
     REFRESH_TOKEN = "/v1/auth/refreshToken",
 
+    //user | member routes
+    GET_STUDENT_ALL = "/v1/user/member/all",
+
     //books routes
     ADD_BOOK = "/v1/book/add",
     GET_BOOK_ALL = "/v1/book/all",
-    GET_BOOK_ONE = "/v1/book/:isbn",
+    GET_BOOK_ONE = "/v1/book",
     DELETE_BOOK = "/v1/book/delete",
 
     //lang routes
@@ -29,10 +32,16 @@ export const enum ROUTE {
     ADD_GENRE = "/v1/genre/add",
     GET_GENRE_ONE = "/v1/genre",
     GET_GENRE_ALL = "/v1/genre/all",
+
+    //group routes
+    ADD_GROUP = "/v1/group/add",
+    GET_GROUP_ONE = "/v1/group",
+    GET_GROUP_ALL = "/v1/group/all",
 }
 
 export const enum ERROR {
     USER_NOT_FOUND = "User not found",
+    GETTING_STUDENT_ALL = "Error when getting all students",
     INVALID_REFRESH_TOKEN = "Invalid refresh token",
     INVALID_TOKEN = "Invalid token",
     ACCESS_DENIED = "Access denied",
@@ -62,4 +71,8 @@ export const enum ERROR {
     ADDING_AUTHOR = "Error when adding author",
     AUTHOR_NOT_FOUND = "Author not found",
     GETTING_AUTHORS_ALL = "Error when getting all authors",
+
+    ADDING_GROUP = "Error when adding group",
+    GROUP_NOT_FOUND = "Group not found",
+    GETTING_GROUPS_ALL = "Error when getting all groups",
 }

@@ -16,13 +16,24 @@ export const AuthRoute = {
                 .json({ token: response.token });
         }
     },
-    registerUser: async (req: Request, res: Response) => {
+    registerUser: async ({ body }: Request, res: Response) => {
         const response = await AuthService.registerUser(
-            req.body.login,
-            req.body.password,
-            req.body.firstName,
-            req.body.lastName
+            body.login,
+            body.password,
+            body.firstName,
+            body.lastName,
+            body.email,
+            body.phone,
+            body.city,
+            body.postalCode,
+            body.streetAddress,
+            body.groupId,
+            body.role
         );
+        res.status(response.status).json(response);
+    },
+    getStudentAll: async (req: Request, res: Response) => {
+        const response = await AuthService.all();
         res.status(response.status).json(response);
     },
     refreshToken: async (req: Request, res: Response) => {

@@ -7,8 +7,10 @@ import { Book } from "./entity/Book";
 import { Genre } from "./entity/Genre";
 import { Language } from "./entity/Language";
 import { Publisher } from "./entity/Publisher";
-import { User } from "./entity/User";
+import { User, UserRole } from "./entity/User";
 import { encryptionUtils } from "./api/utils/encryptionUtils";
+import { UserDetails } from "./entity/UserDetails";
+import { Group } from "./entity/Group";
 
 function getMultipleRandom(arr, max) {
     const shuffled = [...arr].sort(() => 0.5 - Math.random());
@@ -63,21 +65,86 @@ function genGenres(): Genre[] {
 }
 
 async function genTwoUsers() {
-    console.log(" --- Generowanie użytkowników");
+    console.log(" --- Generowanie Admina i Pracownika");
     const hashed1234 = await encryptionUtils.cryptPassword("12341234");
     const user = new User();
+    const userDetails = new UserDetails();
     user.login = "kntp123";
     user.password = hashed1234;
-    user.firstName = "Kamil";
-    user.lastName = "Powski";
+    user.role = UserRole.ADMIN;
+
+    userDetails.firstName = "Kamil";
+    userDetails.lastName = "Powski";
+    userDetails.email = "kpowski@gmail.com";
+    userDetails.phone = "803501683";
+    userDetails.city = "Gorlice";
+    userDetails.postalCode = "38-300";
+    userDetails.streetAddress = "Fioletowa, 194";
+    userDetails.group = null;
+
+    user.userDetails = userDetails;
 
     const user2 = new User();
+    const userDetails2 = new UserDetails();
     user2.login = "test123";
     user2.password = hashed1234;
-    user2.firstName = "Konrad";
-    user2.lastName = "Testowy";
+    user2.role = UserRole.WORKER;
+
+    userDetails2.firstName = "Michal";
+    userDetails2.lastName = "Pracownik";
+    userDetails2.email = "mpracownik@gmail.com";
+    userDetails2.phone = "152174186";
+    userDetails2.city = "Kraków";
+    userDetails2.postalCode = "30-063";
+    userDetails2.streetAddress = "Krakowska, 15";
+    userDetails2.group = null;
+
+    user2.userDetails = userDetails2;
 
     return [user, user2];
+}
+
+function generateGroups() {
+    console.log(` --- Generowanie grup 1-8[a,b,c]`);
+    const groupLetters = ["a", "b", "c"];
+    let groups: Group[] = [];
+
+    for (let index = 0; index < 8; index++) {
+        groupLetters.forEach((letter) => {
+            const userGroup = new Group();
+            userGroup.name = `${index + 1}${letter}`;
+            groups.push(userGroup);
+        });
+    }
+    return groups;
+}
+
+async function generateStudents(connection: Connection, count: Number) {
+    console.log(` --- Generowanie ${count} uczniów`);
+    const hashed1234 = await encryptionUtils.cryptPassword("12341234");
+    const groups: Group[] = await connection.getRepository(Group).find();
+    let students: User[] = [];
+    for (let index = 0; index < count; index++) {
+        const user = new User();
+        const userDetails = new UserDetails();
+        const userGroup = new Group();
+        user.login = `uczen${index}wsb`;
+        user.password = hashed1234;
+        user.role = UserRole.STUDENT;
+
+        userDetails.firstName = faker.name.firstName();
+        userDetails.lastName = faker.name.lastName();
+        userDetails.email = faker.internet.email();
+        userDetails.phone = faker.phone.phoneNumber("#########");
+        userDetails.city = faker.address.city();
+        userDetails.postalCode = faker.address.zipCode("##-###");
+        userDetails.streetAddress = faker.address.streetAddress(true);
+        userDetails.group = groups[Math.floor(Math.random() * groups.length)];
+
+        user.userDetails = userDetails;
+        students.push(user);
+    }
+    return students;
 }
 
 async function genRandomBooks(connection: Connection, count: Number) {
@@ -105,6 +172,7 @@ async function genRandomBooks(connection: Connection, count: Number) {
 
     return books;
 }
+
 //npm run typeorm:cli -- migration:generate -n migration1
 //npm run typeorm:cli -- migration:run
 createConnection()
@@ -123,8 +191,12 @@ createConnection()
         const publisherRepo = connection.getRepository(Publisher);
         await publisherRepo.save(genRandomPublishers(20));
 
+        const groupsRepo = connection.getRepository(Group);
+        await groupsRepo.save(generateGroups());
+
         const userRepo = connection.getRepository(User);
         await userRepo.save(await genTwoUsers());
+        await userRepo.save(await generateStudents(connection, 25));
 
         const bookRepo = connection.getRepository(Book);
         bookRepo.save(await genRandomBooks(connection, 15));

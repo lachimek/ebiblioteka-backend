@@ -1,15 +1,17 @@
 import { getRepository } from "typeorm";
-import { User } from "../../entity/User";
+import { User, UserRole } from "../../entity/User";
 import { ERROR } from "../constants/constants";
 import { encryptionUtils } from "../utils/encryptionUtils";
 import * as jwt from "jsonwebtoken";
 import { CONFIG } from "../config";
+import { Group } from "../../entity/Group";
+import { isDate } from "util";
 
 export const AuthService = {
     loginUser: async (login: string, password: string) => {
         const userRepository = getRepository(User);
         try {
-            const user = await userRepository.findOneOrFail({ login: login });
+            const user = await userRepository.findOneOrFail({ login: login }, { relations: ["userDetails"] });
             if (!(await encryptionUtils.comparePassword(password, user.password))) {
                 return { status: 404, error: ERROR.USER_NOT_FOUND };
             }
@@ -37,15 +39,38 @@ export const AuthService = {
             return { status: 404, error: ERROR.USER_NOT_FOUND };
         }
     },
-    registerUser: async (login: string, password: string, firstName: string, lastName: string) => {
+    registerUser: async (
+        login: string,
+        password: string,
+        firstName: string,
+        lastName: string,
+        email: string,
+        phone: string,
+        city: string,
+        postalCode: string,
+        streetAddress: string,
+        groupId: string | null,
+        role: UserRole
+    ) => {
         const userRepository = getRepository(User);
+        const groupRepository = getRepository(Group);
         try {
+            const group = await groupRepository.findOne({ id: groupId });
             const hashedPassword = await encryptionUtils.cryptPassword(password);
             const user = userRepository.create({
                 login: login,
                 password: hashedPassword,
-                firstName: firstName,
-                lastName: lastName,
+                role: role,
+                userDetails: {
+                    firstName,
+                    lastName,
+                    email,
+                    phone,
+                    city,
+                    postalCode,
+                    streetAddress,
+                    group: groupId === null ? null : group,
+                },
             });
             await userRepository.save(user);
 
@@ -53,6 +78,36 @@ export const AuthService = {
         } catch (error) {
             console.log(error);
             return { status: 404, error: ERROR.USER_NOT_FOUND };
+        }
+    },
+    all: async () => {
+        const userRepository = getRepository(User);
+        try {
+            const students = await userRepository.find({
+                where: [{ role: UserRole.STUDENT }],
+                join: {
+                    alias: "user",
+                    leftJoinAndSelect: {
+                        userDetails: "user.userDetails",
+                        userGroup: "userDetails.group",
+                    },
+                },
+            });
+            return {
+                status: 200,
+                students: students.map((student) => {
+                    const { id, group, ...userDetails } = student.userDetails;
+                    return {
+                        id: student.id,
+                        ...userDetails,
+                        groupName: student.userDetails.group.name,
+                        issuanceCount: Math.floor(Math.random() * 50),
+                    };
+                }),
+            };
+        } catch (error) {
+            console.log(error);
+            return { status: 404, error: ERROR.GETTING_STUDENT_ALL };
         }
     },
     authenticate: async (token: string) => {

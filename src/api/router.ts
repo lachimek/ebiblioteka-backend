@@ -7,18 +7,20 @@ import { LanguageRoute } from "./routes/language";
 import { PublisherRoute } from "./routes/publisher";
 import { GenreRoute } from "./routes/genre";
 import { AuthorRoute } from "./routes/author";
+import { GroupRoute } from "./routes/group";
 
 const router = express.Router();
 
 //Auth routes
 router.post(ROUTE.LOGIN_USER, AuthRoute.loginUser);
 router.post(ROUTE.REGISTER_USER, authenticated, AuthRoute.registerUser);
+router.get(ROUTE.GET_STUDENT_ALL, authenticated, AuthRoute.getStudentAll);
 router.post(ROUTE.REFRESH_TOKEN, AuthRoute.refreshToken);
 
 //Book routes
 router.post(ROUTE.ADD_BOOK, authenticated, BooksRoute.addBook);
 router.get(ROUTE.GET_BOOK_ALL, authenticated, BooksRoute.getBookAll);
-router.get(ROUTE.GET_BOOK_ONE, authenticated, BooksRoute.getBookOne);
+router.get(ROUTE.GET_BOOK_ONE, BooksRoute.getBookOne);
 router.delete(ROUTE.DELETE_BOOK, authenticated, BooksRoute.deleteBook);
 
 //Language routes
@@ -40,5 +42,10 @@ router.get(ROUTE.GET_PUBLISHER_ALL, authenticated, PublisherRoute.getPublisherAl
 router.post(ROUTE.ADD_GENRE, authenticated, GenreRoute.addGenre);
 router.get(ROUTE.GET_GENRE_ONE, authenticated, GenreRoute.getGenreOne);
 router.get(ROUTE.GET_GENRE_ALL, authenticated, GenreRoute.getGenreAll);
+
+//Group routes
+router.post(ROUTE.ADD_GROUP, authenticated, GroupRoute.addGroup);
+router.get(ROUTE.GET_GROUP_ONE, authenticated, GroupRoute.getGroupOne);
+router.get(ROUTE.GET_GROUP_ALL, authenticated, GroupRoute.getGroupAll);
 
 export default router;
