@@ -6,6 +6,7 @@ export const enum ROUTE {
 
     //user | member routes
     GET_STUDENT_ALL = "/v1/user/member/all",
+    GET_STUDENT_ONE = "/v1/user/member",
 
     //books routes
     ADD_BOOK = "/v1/book/add",
@@ -41,6 +42,7 @@ export const enum ROUTE {
 
 export const enum ERROR {
     USER_NOT_FOUND = "User not found",
+    USER_NOT_ADDED = "Error when adding user",
     GETTING_STUDENT_ALL = "Error when getting all students",
     INVALID_REFRESH_TOKEN = "Invalid refresh token",
     INVALID_TOKEN = "Invalid token",

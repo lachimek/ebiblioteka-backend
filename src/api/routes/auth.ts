@@ -18,8 +18,7 @@ export const AuthRoute = {
     },
     registerUser: async ({ body }: Request, res: Response) => {
         const response = await AuthService.registerUser(
-            body.login,
-            body.password,
+            body.id,
             body.firstName,
             body.lastName,
             body.email,
@@ -27,13 +26,16 @@ export const AuthRoute = {
             body.city,
             body.postalCode,
             body.streetAddress,
-            body.groupId,
-            body.role
+            body.groupId
         );
         res.status(response.status).json(response);
     },
     getStudentAll: async (req: Request, res: Response) => {
         const response = await AuthService.all();
+        res.status(response.status).json(response);
+    },
+    getStudentOne: async ({ query }: Request, res: Response) => {
+        const response = await AuthService.get(query.id as string);
         res.status(response.status).json(response);
     },
     refreshToken: async (req: Request, res: Response) => {

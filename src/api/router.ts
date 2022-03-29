@@ -15,12 +15,13 @@ const router = express.Router();
 router.post(ROUTE.LOGIN_USER, AuthRoute.loginUser);
 router.post(ROUTE.REGISTER_USER, authenticated, AuthRoute.registerUser);
 router.get(ROUTE.GET_STUDENT_ALL, authenticated, AuthRoute.getStudentAll);
+router.get(ROUTE.GET_STUDENT_ONE, AuthRoute.getStudentOne);
 router.post(ROUTE.REFRESH_TOKEN, AuthRoute.refreshToken);
 
 //Book routes
 router.post(ROUTE.ADD_BOOK, authenticated, BooksRoute.addBook);
 router.get(ROUTE.GET_BOOK_ALL, authenticated, BooksRoute.getBookAll);
-router.get(ROUTE.GET_BOOK_ONE, BooksRoute.getBookOne);
+router.get(ROUTE.GET_BOOK_ONE, authenticated, BooksRoute.getBookOne);
 router.delete(ROUTE.DELETE_BOOK, authenticated, BooksRoute.deleteBook);
 
 //Language routes
