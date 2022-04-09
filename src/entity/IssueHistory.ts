@@ -18,4 +18,7 @@ export class IssueHistory {
 
     @Column({ name: "return_date" })
     returnDate: Date;
+
+    @Column({ default: false })
+    returned: boolean;
 }
