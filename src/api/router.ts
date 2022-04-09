@@ -8,6 +8,7 @@ import { PublisherRoute } from "./routes/publisher";
 import { GenreRoute } from "./routes/genre";
 import { AuthorRoute } from "./routes/author";
 import { GroupRoute } from "./routes/group";
+import { IssueRoute } from "./routes/issue";
 
 const router = express.Router();
 
@@ -48,5 +49,10 @@ router.get(ROUTE.GET_GENRE_ALL, authenticated, GenreRoute.getGenreAll);
 router.post(ROUTE.ADD_GROUP, authenticated, GroupRoute.addGroup);
 router.get(ROUTE.GET_GROUP_ONE, authenticated, GroupRoute.getGroupOne);
 router.get(ROUTE.GET_GROUP_ALL, authenticated, GroupRoute.getGroupAll);
+
+//Issue routes
+router.post(ROUTE.ADD_ISSUE, authenticated, IssueRoute.addIssue);
+router.get(ROUTE.GET_ISSUE_ONE, authenticated, IssueRoute.getIssueOne);
+router.get(ROUTE.GET_ISSUE_ALL, authenticated, IssueRoute.getIssueAll);
 
 export default router;

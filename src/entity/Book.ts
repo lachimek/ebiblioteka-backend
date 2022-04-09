@@ -1,16 +1,7 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    OneToOne,
-    JoinColumn,
-    OneToMany,
-    ManyToOne,
-    ManyToMany,
-    JoinTable,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, ManyToMany, JoinTable } from "typeorm";
 import { Author } from "./Author";
 import { Genre } from "./Genre";
+import { IssueHistory } from "./IssueHistory";
 import { Language } from "./Language";
 import { Publisher } from "./Publisher";
 
@@ -50,4 +41,7 @@ export class Book {
 
     @Column({ default: false })
     deleted: boolean;
+
+    @OneToMany(() => IssueHistory, (ih) => ih.book)
+    issueHistory: IssueHistory[];
 }

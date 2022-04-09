@@ -168,7 +168,6 @@ async function genRandomBooks(connection: Connection, count: Number) {
         console.log(book);
         books.push(book);
     }
-    console.log(books);
 
     return books;
 }

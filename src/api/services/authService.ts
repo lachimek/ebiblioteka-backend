@@ -141,6 +141,7 @@ export const AuthService = {
                     leftJoinAndSelect: {
                         userDetails: "user.userDetails",
                         userGroup: "userDetails.group",
+                        issueHistory: "user.issueHistory",
                     },
                 },
             });
@@ -148,11 +149,12 @@ export const AuthService = {
                 status: 200,
                 students: students.map((student) => {
                     const { id, group, ...userDetails } = student.userDetails;
+                    const issueHistory = student.issueHistory || [];
                     return {
                         id: student.id,
                         ...userDetails,
                         groupName: student.userDetails.group.name,
-                        issuanceCount: Math.floor(Math.random() * 50),
+                        issuanceCount: issueHistory.length || 0,
                     };
                 }),
             };

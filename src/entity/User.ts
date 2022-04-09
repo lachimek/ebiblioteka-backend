@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany } from "typeorm";
+import { IssueHistory } from "./IssueHistory";
 import { UserDetails } from "./UserDetails";
 
 export enum UserRole {
@@ -24,4 +25,7 @@ export class User {
 
     @Column({ type: "enum", enum: UserRole, default: UserRole.STUDENT })
     role: UserRole;
+
+    @OneToMany(() => IssueHistory, (ih) => ih.member)
+    issueHistory: IssueHistory[];
 }

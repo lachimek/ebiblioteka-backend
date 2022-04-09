@@ -38,6 +38,11 @@ export const enum ROUTE {
     ADD_GROUP = "/v1/group/add",
     GET_GROUP_ONE = "/v1/group",
     GET_GROUP_ALL = "/v1/group/all",
+
+    //issue routes
+    ADD_ISSUE = "/v1/issue/add",
+    GET_ISSUE_ONE = "/v1/issue",
+    GET_ISSUE_ALL = "/v1/issue/all",
 }
 
 export const enum ERROR {
@@ -77,4 +82,8 @@ export const enum ERROR {
     ADDING_GROUP = "Error when adding group",
     GROUP_NOT_FOUND = "Group not found",
     GETTING_GROUPS_ALL = "Error when getting all groups",
+
+    ADDING_ISSUE = "Error when adding issue",
+    ISSUE_NOT_FOUND = "Issue not found",
+    GETTING_ISSUE_ALL = "Error when getting all issues",
 }
