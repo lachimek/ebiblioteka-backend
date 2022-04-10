@@ -58,5 +58,6 @@ router.get(ROUTE.GET_ISSUE_ALL, authenticated, IssueRoute.getIssueAll);
 
 //Stats routes
 router.get(ROUTE.GET_BOOKS_PAGE_STATS, StatsRoute.getBooksPageStats);
+router.get(ROUTE.GET_MEMBERS_PAGE_STATS, StatsRoute.getMembersPageStats);
 
 export default router;

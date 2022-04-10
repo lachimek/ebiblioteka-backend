@@ -1,6 +1,8 @@
 import { getRepository, Like } from "typeorm";
 import { Book } from "../../entity/Book";
+import { Group } from "../../entity/Group";
 import { IssueHistory } from "../../entity/IssueHistory";
+import { User, UserRole } from "../../entity/User";
 import { ERROR } from "../constants/constants";
 
 export const StatsService = {
@@ -46,6 +48,67 @@ export const StatsService = {
         } catch (error) {
             console.log(error);
             return { status: 404, error: ERROR.GETTING_BOOKS_STATS };
+        }
+    },
+    getMembersPageStats: async () => {
+        const membersRepository = getRepository(User);
+        const groupsRepository = getRepository(Group);
+        try {
+            const members = await membersRepository.find({
+                where: [{ role: UserRole.STUDENT }],
+                join: {
+                    alias: "user",
+                    leftJoinAndSelect: {
+                        userDetails: "user.userDetails",
+                        userGroup: "userDetails.group",
+                        issueHistory: "user.issueHistory",
+                    },
+                },
+            });
+
+            const groups = await groupsRepository.find();
+
+            const membersCount = members.length;
+            const groupsCount = groups.length;
+
+            // let groupsMap = new Map();
+            // members.forEach(({ userDetails: { group }, issueHistory }) => {
+            //     if (!groupsMap.has(group.name)) groupsMap.set(group.name, issueHistory.length);
+            //     else groupsMap.set(group.name, groupMap.get(group.name) + issueHistory.length);
+            // });
+
+            // sum total issues per group
+            let groupsDict = {};
+            groups.map((group) => (groupsDict[group.name] = 0));
+            members.forEach(({ userDetails: { group }, issueHistory }) => {
+                if (!groupsDict[group.name]) {
+                    groupsDict[group.name] = issueHistory.length;
+                } else {
+                    groupsDict[group.name] += issueHistory.length;
+                }
+            });
+
+            const bestGroup = [];
+            for (let item in groupsDict) {
+                bestGroup.push({ group: item, value: groupsDict[item] });
+            }
+
+            return {
+                status: 200,
+                info: {
+                    membersCount: membersCount,
+                    groupsCount: groupsCount,
+                    bestGroup: bestGroup.sort((a, b) => b.value - a.value)[0],
+                    graphData: bestGroup.sort((a, b) => {
+                        let textA = a.group.toUpperCase();
+                        let textB = b.group.toUpperCase();
+                        return textA < textB ? -1 : textA > textB ? 1 : 0;
+                    }),
+                },
+            };
+        } catch (error) {
+            console.log(error);
+            return { status: 404, error: ERROR.GETTING_MEMBERS_STATS };
         }
     },
 };

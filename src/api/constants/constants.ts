@@ -46,6 +46,7 @@ export const enum ROUTE {
 
     //stats routes
     GET_BOOKS_PAGE_STATS = "/v1/stats/books",
+    GET_MEMBERS_PAGE_STATS = "/v1/stats/members",
 }
 
 export const enum ERROR {
@@ -91,4 +92,5 @@ export const enum ERROR {
     GETTING_ISSUE_ALL = "Error when getting all issues",
 
     GETTING_BOOKS_STATS = "Error when getting books stats",
+    GETTING_MEMBERS_STATS = "Error when getting members stats",
 }
