@@ -54,7 +54,7 @@ router.get(ROUTE.GET_GROUP_ALL, authenticated, GroupRoute.getGroupAll);
 //Issue routes
 router.post(ROUTE.ADD_ISSUE, authenticated, IssueRoute.addIssue);
 router.get(ROUTE.GET_ISSUE_ONE, authenticated, IssueRoute.getIssueOne);
-router.get(ROUTE.GET_ISSUE_ALL, authenticated, IssueRoute.getIssueAll);
+router.get(ROUTE.GET_ISSUE_ALL, IssueRoute.getIssueAll);
 
 //Stats routes
 router.get(ROUTE.GET_BOOKS_PAGE_STATS, StatsRoute.getBooksPageStats);

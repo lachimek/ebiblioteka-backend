@@ -5,6 +5,17 @@ import { checkIfValidUUID } from "../utils/checkIfValidUUID";
 import { Book } from "../../entity/Book";
 import { User } from "../../entity/User";
 
+const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+function dateDiffInDays(a, b) {
+    // Discard the time and time-zone information.
+    const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+    const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+    console.log("diff", (utc2 - utc1) / _MS_PER_DAY);
+
+    return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+}
+
 export const IssueService = {
     add: async (issueData: { bookId: string; userId: string; issueDate: string; returnDate: string }) => {
         try {
@@ -62,12 +73,51 @@ export const IssueService = {
     all: async () => {
         const issueRepository = getRepository(IssueHistory);
         try {
-            const issues = await issueRepository.find();
+            const issues = await issueRepository.find({
+                join: {
+                    alias: "issue",
+                    leftJoinAndSelect: {
+                        book: "issue.book",
+                        member: "issue.member",
+                        memberDetails: "member.userDetails",
+                        memberGroup: "memberDetails.group",
+                    },
+                },
+                where: { returned: false },
+            });
 
-            return { status: 200, issues: issues };
+            let formattedIssues = [];
+
+            issues.forEach((issue) => {
+                const daysTillReturn = dateDiffInDays(new Date(new Date().toISOString()), new Date(issue.returnDate));
+                if (daysTillReturn <= 2) {
+                    formattedIssues.push({
+                        id: issue.id,
+                        issueDate: issue.issueDate,
+                        returnDate: issue.returnDate,
+                        overdue: daysTillReturn <= 0,
+                        book: {
+                            id: issue.book.id,
+                            title: issue.book.title,
+                            isbn: issue.book.isbn,
+                            available: issue.book.available,
+                            deleted: issue.book.deleted,
+                        },
+                        member: {
+                            id: issue.member.id,
+                            firstName: issue.member.userDetails.firstName,
+                            lastName: issue.member.userDetails.lastName,
+                            phone: issue.member.userDetails.phone,
+                            groupName: issue.member.userDetails.group.name,
+                        },
+                    });
+                }
+            });
+
+            return { status: 200, issues: formattedIssues };
         } catch (error) {
             console.log(error);
-            return { status: 404, error: ERROR.GETTING_LANG_ALL };
+            return { status: 404, error: ERROR.GETTING_ISSUE_ALL };
         }
     },
 };
