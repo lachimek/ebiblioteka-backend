@@ -14,4 +14,8 @@ export const IssueRoute = {
         const response = await IssueService.all();
         res.status(response.status).json(response);
     },
+    getIssueOverdues: async (req: Request, res: Response) => {
+        const response = await IssueService.overdues();
+        res.status(response.status).json(response);
+    },
 };

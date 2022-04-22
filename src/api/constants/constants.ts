@@ -43,6 +43,7 @@ export const enum ROUTE {
     ADD_ISSUE = "/v1/issue/add",
     GET_ISSUE_ONE = "/v1/issue",
     GET_ISSUE_ALL = "/v1/issue/all",
+    GET_ISSUE_OVERDUES = "/v1/issue/overdues",
 
     //stats routes
     GET_BOOKS_PAGE_STATS = "/v1/stats/books",

@@ -22,7 +22,7 @@ router.post(ROUTE.REFRESH_TOKEN, AuthRoute.refreshToken);
 
 //Book routes
 router.post(ROUTE.ADD_BOOK, authenticated, BooksRoute.addBook);
-router.get(ROUTE.GET_BOOK_ALL, authenticated, BooksRoute.getBookAll);
+router.get(ROUTE.GET_BOOK_ALL, BooksRoute.getBookAll);
 router.get(ROUTE.GET_BOOK_ONE, authenticated, BooksRoute.getBookOne);
 router.delete(ROUTE.DELETE_BOOK, authenticated, BooksRoute.deleteBook);
 
@@ -55,6 +55,7 @@ router.get(ROUTE.GET_GROUP_ALL, authenticated, GroupRoute.getGroupAll);
 router.post(ROUTE.ADD_ISSUE, authenticated, IssueRoute.addIssue);
 router.get(ROUTE.GET_ISSUE_ONE, authenticated, IssueRoute.getIssueOne);
 router.get(ROUTE.GET_ISSUE_ALL, IssueRoute.getIssueAll);
+router.get(ROUTE.GET_ISSUE_OVERDUES, authenticated, IssueRoute.getIssueOverdues);
 
 //Stats routes
 router.get(ROUTE.GET_BOOKS_PAGE_STATS, StatsRoute.getBooksPageStats);

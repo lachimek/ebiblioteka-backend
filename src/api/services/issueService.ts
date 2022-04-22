@@ -11,8 +11,6 @@ function dateDiffInDays(a, b) {
     const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
     const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
 
-    console.log("diff", (utc2 - utc1) / _MS_PER_DAY);
-
     return Math.floor((utc2 - utc1) / _MS_PER_DAY);
 }
 
@@ -71,6 +69,61 @@ export const IssueService = {
         }
     },
     all: async () => {
+        const issueRepository = getRepository(IssueHistory);
+        const status = (issue: IssueHistory) => {
+            const daysTillReturn = dateDiffInDays(new Date(new Date().toISOString()), new Date(issue.returnDate));
+            if (daysTillReturn > 2) {
+                return "good";
+            } else if (daysTillReturn <= 2 && daysTillReturn > 0) {
+                return "near";
+            } else if (issue.returned) {
+                return "returned";
+            } else {
+                return "overdue";
+            }
+        };
+        try {
+            const issues = await issueRepository.find({
+                join: {
+                    alias: "issue",
+                    leftJoinAndSelect: {
+                        book: "issue.book",
+                        member: "issue.member",
+                        memberDetails: "member.userDetails",
+                        memberGroup: "memberDetails.group",
+                    },
+                },
+            });
+            let formattedIssues = [];
+
+            issues.forEach((issue) => {
+                formattedIssues.push({
+                    id: issue.id,
+                    issueDate: issue.issueDate,
+                    returnDate: issue.returnDate,
+                    status: status(issue),
+                    book: {
+                        id: issue.book.id,
+                        title: issue.book.title,
+                        isbn: issue.book.isbn,
+                    },
+                    member: {
+                        id: issue.member.id,
+                        firstName: issue.member.userDetails.firstName,
+                        lastName: issue.member.userDetails.lastName,
+                        phone: issue.member.userDetails.phone,
+                        groupName: issue.member.userDetails.group.name,
+                    },
+                });
+            });
+
+            return { status: 200, issues: formattedIssues };
+        } catch (error) {
+            console.log(error);
+            return { status: 404, error: ERROR.GETTING_ISSUE_ALL };
+        }
+    },
+    overdues: async () => {
         const issueRepository = getRepository(IssueHistory);
         try {
             const issues = await issueRepository.find({

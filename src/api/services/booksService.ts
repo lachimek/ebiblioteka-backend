@@ -69,7 +69,7 @@ export const BooksService = {
         const booksRepository = getRepository(Book);
         try {
             const books = await booksRepository.find({
-                relations: ["author", "genres", "language", "publisher"],
+                relations: ["author", "genres", "language", "publisher", "issueHistory"],
                 where: [{ deleted: false }],
             });
 
