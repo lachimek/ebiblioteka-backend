@@ -15,15 +15,12 @@ function dateDiffInDays(a, b) {
 }
 
 export const IssueService = {
-    add: async (issueData: { bookId: string; userId: string; issueDate: string; returnDate: string }) => {
+    add: async (issueData: { bookId: string; userId: string; issueDate: string; expectedReturnDate: string }) => {
         try {
             let addedIssue = null;
             await getManager().transaction(async (transactionalEntityManager) => {
                 const book = await transactionalEntityManager.findOneOrFail<Book>(Book, issueData.bookId);
                 const user = await transactionalEntityManager.findOneOrFail<User>(User, issueData.userId);
-
-                console.log("book: ", book);
-                console.log("user: ", user);
 
                 book.available = false;
 
@@ -33,7 +30,7 @@ export const IssueService = {
                         member: user,
                         book: book,
                         issueDate: issueData.issueDate,
-                        returnDate: issueData.returnDate,
+                        expectedReturnDate: issueData.expectedReturnDate,
                     })
                 );
             });
@@ -71,7 +68,10 @@ export const IssueService = {
     all: async () => {
         const issueRepository = getRepository(IssueHistory);
         const status = (issue: IssueHistory) => {
-            const daysTillReturn = dateDiffInDays(new Date(new Date().toISOString()), new Date(issue.returnDate));
+            const daysTillReturn = dateDiffInDays(
+                new Date(new Date().toISOString()),
+                new Date(issue.expectedReturnDate)
+            );
             if (daysTillReturn > 2) {
                 return "good";
             } else if (daysTillReturn <= 2 && daysTillReturn > 0) {
@@ -101,6 +101,7 @@ export const IssueService = {
                     id: issue.id,
                     issueDate: issue.issueDate,
                     returnDate: issue.returnDate,
+                    expectedReturnDate: issue.expectedReturnDate,
                     status: status(issue),
                     book: {
                         id: issue.book.id,
@@ -142,12 +143,16 @@ export const IssueService = {
             let formattedIssues = [];
 
             issues.forEach((issue) => {
-                const daysTillReturn = dateDiffInDays(new Date(new Date().toISOString()), new Date(issue.returnDate));
+                const daysTillReturn = dateDiffInDays(
+                    new Date(new Date().toISOString()),
+                    new Date(issue.expectedReturnDate)
+                );
                 if (daysTillReturn <= 2) {
                     formattedIssues.push({
                         id: issue.id,
                         issueDate: issue.issueDate,
                         returnDate: issue.returnDate,
+                        expectedReturnDate: issue.expectedReturnDate,
                         overdue: daysTillReturn <= 0,
                         book: {
                             id: issue.book.id,

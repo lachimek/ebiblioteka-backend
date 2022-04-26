@@ -16,7 +16,10 @@ export class IssueHistory {
     @Column({ name: "issue_date" })
     issueDate: Date;
 
-    @Column({ name: "return_date" })
+    @Column({ name: "expected_return_date" })
+    expectedReturnDate: Date;
+
+    @Column({ name: "return_date", nullable: true })
     returnDate: Date;
 
     @Column({ default: false })
