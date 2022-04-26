@@ -72,12 +72,12 @@ export const IssueService = {
                 new Date(new Date().toISOString()),
                 new Date(issue.expectedReturnDate)
             );
-            if (daysTillReturn > 2) {
+            if (issue.returned) {
+                return "returned";
+            } else if (daysTillReturn > 2) {
                 return "good";
             } else if (daysTillReturn <= 2 && daysTillReturn > 0) {
                 return "near";
-            } else if (issue.returned) {
-                return "returned";
             } else {
                 return "overdue";
             }
@@ -176,6 +176,37 @@ export const IssueService = {
         } catch (error) {
             console.log(error);
             return { status: 404, error: ERROR.GETTING_ISSUE_ALL };
+        }
+    },
+    returnIssue: async (issueId: string) => {
+        try {
+            let returnedIssue = null;
+            await getManager().transaction(async (transactionalEntityManager) => {
+                const foundIssue = await transactionalEntityManager.findOneOrFail<IssueHistory>(IssueHistory, {
+                    join: {
+                        alias: "issue",
+                        leftJoinAndSelect: {
+                            book: "issue.book",
+                        },
+                    },
+                    where: { id: issueId },
+                });
+                foundIssue.returnDate = new Date();
+                foundIssue.returned = true;
+
+                const foundBook = await transactionalEntityManager.findOneOrFail<Book>(Book, foundIssue.book.id);
+                foundBook.available = true;
+
+                await transactionalEntityManager.save(foundBook);
+                returnedIssue = await transactionalEntityManager.save(foundIssue);
+            });
+            console.log(returnedIssue);
+
+            if (returnedIssue) return { status: 200, issue: returnedIssue };
+            else return { status: 404, error: ERROR.RETURNING_ISSUE };
+        } catch (error) {
+            console.log(error);
+            return { status: 404, error: ERROR.RETURNING_ISSUE };
         }
     },
 };

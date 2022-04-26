@@ -18,4 +18,8 @@ export const IssueRoute = {
         const response = await IssueService.overdues();
         res.status(response.status).json(response);
     },
+    returnIssue: async ({ body }: Request, res: Response) => {
+        const response = await IssueService.returnIssue(body.issueId);
+        res.status(response.status).json(response);
+    },
 };

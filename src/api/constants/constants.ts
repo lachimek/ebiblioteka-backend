@@ -44,6 +44,7 @@ export const enum ROUTE {
     GET_ISSUE_ONE = "/v1/issue",
     GET_ISSUE_ALL = "/v1/issue/all",
     GET_ISSUE_OVERDUES = "/v1/issue/overdues",
+    RETURN_ISSUE = "/v1/issue/return",
 
     //stats routes
     GET_BOOKS_PAGE_STATS = "/v1/stats/books",
@@ -91,6 +92,7 @@ export const enum ERROR {
     ADDING_ISSUE = "Error when adding issue",
     ISSUE_NOT_FOUND = "Issue not found",
     GETTING_ISSUE_ALL = "Error when getting all issues",
+    RETURNING_ISSUE = "Error when returning an issue",
 
     GETTING_BOOKS_STATS = "Error when getting books stats",
     GETTING_MEMBERS_STATS = "Error when getting members stats",
