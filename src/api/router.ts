@@ -61,5 +61,6 @@ router.get(ROUTE.GET_ISSUE_OVERDUES, authenticated, IssueRoute.getIssueOverdues)
 //Stats routes
 router.get(ROUTE.GET_BOOKS_PAGE_STATS, StatsRoute.getBooksPageStats);
 router.get(ROUTE.GET_MEMBERS_PAGE_STATS, StatsRoute.getMembersPageStats);
+router.get(ROUTE.GET_ISSUES_PAGE_STATS, StatsRoute.getIssuesPageStats);
 
 export default router;

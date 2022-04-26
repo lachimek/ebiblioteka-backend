@@ -4,15 +4,7 @@ import { IssueHistory } from "../../entity/IssueHistory";
 import { checkIfValidUUID } from "../utils/checkIfValidUUID";
 import { Book } from "../../entity/Book";
 import { User } from "../../entity/User";
-
-const _MS_PER_DAY = 1000 * 60 * 60 * 24;
-function dateDiffInDays(a, b) {
-    // Discard the time and time-zone information.
-    const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-    const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-
-    return Math.floor((utc2 - utc1) / _MS_PER_DAY);
-}
+import dateDiffInDays from "../utils/dateDiffInDays";
 
 export const IssueService = {
     add: async (issueData: { bookId: string; userId: string; issueDate: string; expectedReturnDate: string }) => {

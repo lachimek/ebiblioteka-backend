@@ -4,6 +4,7 @@ import { Group } from "../../entity/Group";
 import { IssueHistory } from "../../entity/IssueHistory";
 import { User, UserRole } from "../../entity/User";
 import { ERROR } from "../constants/constants";
+import dateDiffInDays from "../utils/dateDiffInDays";
 
 export const StatsService = {
     getBooksPageStats: async () => {
@@ -109,6 +110,35 @@ export const StatsService = {
         } catch (error) {
             console.log(error);
             return { status: 404, error: ERROR.GETTING_MEMBERS_STATS };
+        }
+    },
+    getIssuesPageStats: async () => {
+        const issueRepository = getRepository(IssueHistory);
+        try {
+            const issues = await issueRepository.find();
+            let nearCount = 0;
+            let overdueCount = 0;
+            issues.forEach((issue) => {
+                if (!issue.returned) {
+                    const daysTillReturn = dateDiffInDays(
+                        new Date(new Date().toISOString()),
+                        new Date(issue.expectedReturnDate)
+                    );
+                    if (daysTillReturn <= 2 && daysTillReturn > 0) nearCount++;
+                    else if (daysTillReturn < 0) overdueCount++;
+                }
+            });
+            return {
+                status: 200,
+                info: {
+                    open: issues.filter((issue) => issue.returned === false).length,
+                    near: nearCount,
+                    overdue: overdueCount,
+                },
+            };
+        } catch (error) {
+            console.log(error);
+            return { status: 404, error: ERROR.GETTING_ISSUE_ALL };
         }
     },
 };
