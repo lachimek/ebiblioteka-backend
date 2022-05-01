@@ -16,6 +16,20 @@ export const AuthRoute = {
                 .json({ token: response.token });
         }
     },
+    loginStudent: async (req: Request, res: Response) => {
+        const response = await AuthService.loginStudent(req.body.login, req.body.password, req.body.card || "");
+        if (response.status === 404) {
+            res.status(response.status).json(response);
+        } else {
+            res.status(response.status)
+                .cookie("refreshToken", response.refreshToken, {
+                    httpOnly: true,
+                    expires: response.expires,
+                })
+                .header("Authorization", "Bearer " + response.token)
+                .json({ token: response.token });
+        }
+    },
     registerUser: async ({ body }: Request, res: Response) => {
         const response = await AuthService.registerUser(
             body.id,

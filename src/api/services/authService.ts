@@ -41,6 +41,45 @@ export const AuthService = {
             return { status: 404, error: ERROR.USER_NOT_FOUND };
         }
     },
+    loginStudent: async (login: string, password: string, card: string = "") => {
+        const userRepository = getRepository(User);
+        try {
+            if (card !== "" && login === "" && password === "") {
+                //login by scanning card
+            } else {
+                //normal credentials login
+                const user = await userRepository.findOneOrFail(
+                    { login: login },
+                    { relations: ["userDetails"], where: { role: UserRole.STUDENT } }
+                );
+                if (!(await encryptionUtils.comparePassword(password, user.password))) {
+                    return { status: 404, error: ERROR.USER_NOT_FOUND };
+                }
+
+                delete user.password;
+
+                const token = jwt.sign({ user: user }, CONFIG.TOKEN_SECRET, {
+                    expiresIn: CONFIG.TOKEN_EXPIRE,
+                });
+                const refreshToken = jwt.sign({ user: user }, CONFIG.REFRESH_TOKEN_SECRET, {
+                    expiresIn: CONFIG.REFRESH_TOKEN_EXPIRE,
+                });
+                const now = new Date().getTime();
+                const expires = new Date(now + 1000 * CONFIG.REFRESH_TOKEN_EXPIRE);
+
+                return {
+                    status: 200,
+                    token: token,
+                    refreshToken: refreshToken,
+                    expires: expires,
+                };
+            }
+        } catch (error) {
+            //EntityNotFoundError
+            console.log(error);
+            return { status: 404, error: ERROR.USER_NOT_FOUND };
+        }
+    },
     registerUser: async (
         id: string, //defined if edit
         firstName: string,
@@ -200,8 +239,12 @@ export const AuthService = {
         //if(!token) return {status: 401, error: ERROR.INVALID_TOKEN};
         try {
             const verified = jwt.verify(token, CONFIG.TOKEN_SECRET);
+
             if (!verified) return { status: 403, error: ERROR.ACCESS_DENIED };
-            else return { status: 200 };
+            else {
+                const user = jwt.decode(token);
+                return { status: 200, permissions: (user as jwt.JwtPayload).user.role };
+            }
         } catch (error) {
             console.log(error);
             return { status: 401, error: ERROR.INVALID_TOKEN };
