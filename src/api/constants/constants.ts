@@ -42,6 +42,7 @@ export const enum ROUTE {
     //issue routes
     ADD_ISSUE = "/v1/issue/add",
     GET_ISSUE_ONE = "/v1/issue",
+    GET_ISSUE_BY_USER_ID = "/v1/issue/ofuser",
     GET_ISSUE_ALL = "/v1/issue/all",
     GET_ISSUE_OVERDUES = "/v1/issue/overdues",
     RETURN_ISSUE = "/v1/issue/return",

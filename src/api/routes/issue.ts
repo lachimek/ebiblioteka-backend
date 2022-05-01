@@ -10,6 +10,10 @@ export const IssueRoute = {
         const response = await IssueService.get(query.search as string);
         res.status(response.status).json(response);
     },
+    getIssuesByUserId: async ({ query }: Request, res: Response) => {
+        const response = await IssueService.getByUserId(query.id as string);
+        res.status(response.status).json(response);
+    },
     getIssueAll: async (req: Request, res: Response) => {
         const response = await IssueService.all();
         res.status(response.status).json(response);

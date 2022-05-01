@@ -55,6 +55,7 @@ router.get(ROUTE.GET_GROUP_ALL, authenticated, GroupRoute.getGroupAll);
 router.post(ROUTE.ADD_ISSUE, authenticated, IssueRoute.addIssue);
 router.post(ROUTE.RETURN_ISSUE, authenticated, IssueRoute.returnIssue);
 router.get(ROUTE.GET_ISSUE_ONE, authenticated, IssueRoute.getIssueOne);
+router.get(ROUTE.GET_ISSUE_BY_USER_ID, IssueRoute.getIssuesByUserId);
 router.get(ROUTE.GET_ISSUE_ALL, IssueRoute.getIssueAll);
 router.get(ROUTE.GET_ISSUE_OVERDUES, authenticated, IssueRoute.getIssueOverdues);
 

@@ -57,6 +57,58 @@ export const IssueService = {
             return { status: 404, error: ERROR.LANG_NOT_FOUND };
         }
     },
+    getByUserId: async (userId: string) => {
+        const issueRepository = getRepository(IssueHistory);
+        const status = (issue: IssueHistory) => {
+            const daysTillReturn = dateDiffInDays(
+                new Date(new Date().toISOString()),
+                new Date(issue.expectedReturnDate)
+            );
+            if (issue.returned) {
+                return "returned";
+            } else if (daysTillReturn > 2) {
+                return "good";
+            } else if (daysTillReturn <= 2 && daysTillReturn > 0) {
+                return "near";
+            } else {
+                return "overdue";
+            }
+        };
+        try {
+            const issues = await issueRepository.find({
+                join: {
+                    alias: "issue",
+                    leftJoinAndSelect: {
+                        book: "issue.book",
+                        author: "book.author",
+                        genres: "book.genres",
+                        member: "issue.member",
+                        memberDetails: "member.userDetails",
+                        memberGroup: "memberDetails.group",
+                    },
+                },
+            });
+            let formattedIssues = [];
+
+            issues.forEach((issue) => {
+                if (issue.member.id === userId) {
+                    formattedIssues.push({
+                        id: issue.id,
+                        issueDate: issue.issueDate,
+                        returnDate: issue.returnDate,
+                        expectedReturnDate: issue.expectedReturnDate,
+                        status: status(issue),
+                        book: issue.book,
+                    });
+                }
+            });
+
+            return { status: 200, issues: formattedIssues };
+        } catch (error) {
+            console.log(error);
+            return { status: 404, error: ERROR.GETTING_ISSUE_ALL };
+        }
+    },
     all: async () => {
         const issueRepository = getRepository(IssueHistory);
         const status = (issue: IssueHistory) => {
