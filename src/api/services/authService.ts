@@ -8,6 +8,7 @@ import { encryptionUtils } from "../utils/encryptionUtils";
 import { CONFIG } from "../config";
 import { Group } from "../../entity/Group";
 import randomPasswordString from "../utils/randomPasswordString";
+import { checkIfValidUUID } from "../utils/checkIfValidUUID";
 
 export const AuthService = {
     loginUser: async (login: string, password: string) => {
@@ -42,41 +43,47 @@ export const AuthService = {
         }
     },
     loginStudent: async (login: string, password: string, card: string = "") => {
+        console.log({ login, password, card });
         const userRepository = getRepository(User);
         try {
+            let user = null;
             if (card !== "" && login === "" && password === "") {
                 //login by scanning card
+                if (!checkIfValidUUID(card)) return { status: 404, error: ERROR.USER_NOT_FOUND };
+                user = await userRepository.findOneOrFail(
+                    { id: card },
+                    { relations: ["userDetails"], where: { role: UserRole.STUDENT } }
+                );
             } else {
                 //normal credentials login
-                const user = await userRepository.findOneOrFail(
+                user = await userRepository.findOneOrFail(
                     { login: login },
                     { relations: ["userDetails"], where: { role: UserRole.STUDENT } }
                 );
                 if (!(await encryptionUtils.comparePassword(password, user.password))) {
                     return { status: 404, error: ERROR.USER_NOT_FOUND };
                 }
-
-                delete user.password;
-
-                const token = jwt.sign({ user: user }, CONFIG.TOKEN_SECRET, {
-                    expiresIn: CONFIG.TOKEN_EXPIRE,
-                });
-                const refreshToken = jwt.sign({ user: user }, CONFIG.REFRESH_TOKEN_SECRET, {
-                    expiresIn: CONFIG.REFRESH_TOKEN_EXPIRE,
-                });
-                const now = new Date().getTime();
-                const expires = new Date(now + 1000 * CONFIG.REFRESH_TOKEN_EXPIRE);
-
-                return {
-                    status: 200,
-                    token: token,
-                    refreshToken: refreshToken,
-                    expires: expires,
-                };
             }
+            delete user.password;
+
+            const token = jwt.sign({ user: user }, CONFIG.TOKEN_SECRET, {
+                expiresIn: CONFIG.TOKEN_EXPIRE,
+            });
+            const refreshToken = jwt.sign({ user: user }, CONFIG.REFRESH_TOKEN_SECRET, {
+                expiresIn: CONFIG.REFRESH_TOKEN_EXPIRE,
+            });
+            const now = new Date().getTime();
+            const expires = new Date(now + 1000 * CONFIG.REFRESH_TOKEN_EXPIRE);
+
+            return {
+                status: 200,
+                token: token,
+                refreshToken: refreshToken,
+                expires: expires,
+            };
         } catch (error) {
             //EntityNotFoundError
-            console.log(error);
+            //console.log(error);
             return { status: 404, error: ERROR.USER_NOT_FOUND };
         }
     },

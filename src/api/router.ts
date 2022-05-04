@@ -23,7 +23,7 @@ router.post(ROUTE.REFRESH_TOKEN, AuthRoute.refreshToken);
 
 //Book routes
 router.post(ROUTE.ADD_BOOK, authenticated(), BooksRoute.addBook);
-router.get(ROUTE.GET_BOOK_ALL, authenticated(), BooksRoute.getBookAll);
+router.get(ROUTE.GET_BOOK_ALL, authenticated(true), BooksRoute.getBookAll);
 router.get(ROUTE.GET_BOOK_ONE, authenticated(), BooksRoute.getBookOne);
 router.delete(ROUTE.DELETE_BOOK, authenticated(), BooksRoute.deleteBook);
 
@@ -45,7 +45,7 @@ router.get(ROUTE.GET_PUBLISHER_ALL, authenticated(), PublisherRoute.getPublisher
 //Genre routes
 router.post(ROUTE.ADD_GENRE, authenticated(), GenreRoute.addGenre);
 router.get(ROUTE.GET_GENRE_ONE, authenticated(), GenreRoute.getGenreOne);
-router.get(ROUTE.GET_GENRE_ALL, authenticated(), GenreRoute.getGenreAll);
+router.get(ROUTE.GET_GENRE_ALL, authenticated(true), GenreRoute.getGenreAll);
 
 //Group routes
 router.post(ROUTE.ADD_GROUP, authenticated(), GroupRoute.addGroup);

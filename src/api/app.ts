@@ -7,5 +7,7 @@ export const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: ["http://localhost:3000", "http://localhost:3005"], credentials: true }));
+app.use(
+    cors({ origin: ["http://localhost:3000", "http://localhost:3005", "http://192.168.0.109:3005"], credentials: true })
+);
 app.use("/api", router);
