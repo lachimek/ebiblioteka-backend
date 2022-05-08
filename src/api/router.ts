@@ -20,6 +20,7 @@ router.post(ROUTE.REGISTER_USER, authenticated(), AuthRoute.registerUser);
 router.get(ROUTE.GET_STUDENT_ALL, authenticated(), AuthRoute.getStudentAll);
 router.get(ROUTE.GET_STUDENT_ONE, authenticated(), AuthRoute.getStudentOne);
 router.post(ROUTE.REFRESH_TOKEN, AuthRoute.refreshToken);
+router.post(ROUTE.CHANGE_PASSWORD, authenticated(true), AuthRoute.changePassword);
 
 //Book routes
 router.post(ROUTE.ADD_BOOK, authenticated(), BooksRoute.addBook);

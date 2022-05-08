@@ -4,6 +4,7 @@ export const enum ROUTE {
     LOGIN_STUDENT = "/v1/auth/loginStudent",
     REGISTER_USER = "/v1/auth/register",
     REFRESH_TOKEN = "/v1/auth/refreshToken",
+    CHANGE_PASSWORD = "/v1/auth/changePassword",
 
     //user | member routes
     GET_STUDENT_ALL = "/v1/user/member/all",

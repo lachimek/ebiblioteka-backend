@@ -56,4 +56,8 @@ export const AuthRoute = {
         const response = await AuthService.refreshToken(req.cookies["refreshToken"]);
         res.status(response.status).json(response);
     },
+    changePassword: async ({ body }: Request, res: Response) => {
+        const response = await AuthService.changePassword(body.userId, body.password, body.newPassword);
+        res.status(response.status).json(response);
+    },
 };

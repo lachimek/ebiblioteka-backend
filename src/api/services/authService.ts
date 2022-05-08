@@ -272,4 +272,29 @@ export const AuthService = {
             return { status: 401, error: ERROR.INVALID_TOKEN };
         }
     },
+    changePassword: async (userId: string, password: string, newPassword: string) => {
+        console.log({ userId, password, newPassword });
+        const userRepository = getRepository(User);
+        try {
+            const user = await userRepository.findOneOrFail({ id: userId });
+            if (!(await encryptionUtils.comparePassword(password, user.password))) {
+                return { status: 404, error: "password_mismatch" };
+            }
+
+            const hashedPassword = await encryptionUtils.cryptPassword(newPassword);
+
+            user.password = hashedPassword;
+
+            await userRepository.save(user);
+
+            return {
+                status: 200,
+                success: true,
+            };
+        } catch (error) {
+            //EntityNotFoundError
+            //console.log(error);
+            return { status: 404, error: ERROR.USER_NOT_FOUND };
+        }
+    },
 };
